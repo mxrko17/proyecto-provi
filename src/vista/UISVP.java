@@ -8,7 +8,7 @@ import java.util.Optional;
 import java.util.Scanner;
 
 import controlador.*;
-import excepciones.SistemaVentaPasajesException;
+import excepciones.SVPException;
 import modelo.*;
 import utilidades.*;
 
@@ -58,7 +58,7 @@ public class UISVP {
                 ejecutarOpcion(opcion);
             } catch (NumberFormatException e) {
                 System.out.println("*** Error: Debe ingresar un número válido. ***");
-            } catch (SistemaVentaPasajesException e) {
+            } catch (SVPException e) {
                 System.out.println("\n*** Error: " + e.getMessage() + " ***");
             } catch (Exception e) {
                 System.out.println("\n*** Error de formato en los datos ingresados. Intente nuevamente. ***");

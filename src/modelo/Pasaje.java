@@ -2,7 +2,7 @@ package modelo;
 
 import java.util.UUID; // Importamos la clase mágica
 
-class Pasaje {
+public class Pasaje {
     private long numero;
     private int asiento;
     private Viaje viaje;
