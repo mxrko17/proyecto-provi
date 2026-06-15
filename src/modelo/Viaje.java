@@ -5,8 +5,9 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
 import java.util.ArrayList;
+import java.io.Serializable;
 
-public class Viaje {
+public class Viaje implements Serializable{
     private Date fecha;
     private Time hora;
     private int precio;

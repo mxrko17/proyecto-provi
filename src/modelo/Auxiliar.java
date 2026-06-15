@@ -3,8 +3,9 @@ package modelo;
 import utilidades.Direccion;
 import utilidades.Nombre;
 import utilidades.idPersona;
+import java.io.Serializable;
 
-public class Auxiliar extends Tripulante {
+public class Auxiliar extends Tripulante implements Serializable{
 
     public Auxiliar(idPersona id, Nombre nom, Direccion dir) {
         super(id, nom, dir);

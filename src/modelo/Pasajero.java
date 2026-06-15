@@ -2,8 +2,9 @@ package modelo;
 
 import utilidades.Nombre;
 import utilidades.idPersona;
+import java.io.Serializable;
 
-public class Pasajero extends Persona {
+public class Pasajero extends Persona implements Serializable{
     private Nombre nomContacto;
     private String fonoContacto;
 

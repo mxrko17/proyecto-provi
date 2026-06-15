@@ -1,5 +1,7 @@
 package utilidades;
 
-public enum Tratamiento {
+import java.io.Serializable;
+
+public enum Tratamiento implements Serializable{
     SR, SRA
 }

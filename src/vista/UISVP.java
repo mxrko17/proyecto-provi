@@ -6,7 +6,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Optional;
 import java.util.Scanner;
-
 import controlador.*;
 import excepciones.SVPException;
 import modelo.*;
@@ -33,7 +32,7 @@ public class UISVP {
 
     public void menu() {
         int opcion = 0;
-        while (opcion != 14) {
+        while (opcion != 18) {
             System.out.println("\n==========================================");
             System.out.println("...::: Menú principal :::...");
             System.out.println("1) Crear empresa");
@@ -49,7 +48,11 @@ public class UISVP {
             System.out.println("11) Listar empresas");
             System.out.println("12) Listar llegadas/salidas de terminal");
             System.out.println("13) Listar ventas de empresa");
-            System.out.println("14) Salir");
+            System.out.println("14) Generar pasajes venta");
+            System.out.println("15) Leer datos iniciales");
+            System.out.println("16) Guardar datos del sistema");
+            System.out.println("17) Leer datos del sistema");
+            System.out.println("18) Salir");
             System.out.println("------------------------------------------");
             System.out.print("..:: Ingrese número de opción: ");
 
@@ -61,7 +64,7 @@ public class UISVP {
             } catch (SVPException e) {
                 System.out.println("\n*** Error: " + e.getMessage() + " ***");
             } catch (Exception e) {
-                System.out.println("\n*** Error de formato en los datos ingresados. Intente nuevamente. ***");
+                System.out.println("\n*** Error de formato. Intente nuevamente. ***");
             }
         }
     }
@@ -81,15 +84,36 @@ public class UISVP {
             case 11: listEmpresas(); break;
             case 12: listLlegadasSalidasTerminal(); break;
             case 13: listVentasEmpresa(); break;
-            case 14: System.out.println("Saliendo del sistema..."); break;
-            default: System.out.println("*** Error: Opción fuera de rango (1-14) ***");
+            case 14: generarPasajesVenta(); break;
+            case 15: SistemaVentaPasajes.getInstance().readDatosIniciales(); System.out.println("::: Datos iniciales cargados con éxito :::"); break;
+            case 16: SistemaVentaPasajes.getInstance().saveDatosSistema(); System.out.println("::: Estado del sistema guardado correctamente :::"); break;
+            case 17: SistemaVentaPasajes.getInstance().readDatosSistema(); System.out.println("::: Estado del sistema restaurado con éxito :::"); break;
+            case 18: System.out.println("Saliendo del sistema..."); break;
+            default: System.out.println("*** Error: Opción fuera de rango (1-18) ***");
         }
     }
 
+    private void generarPasajesVenta() {
+        System.out.println("\n:::: Generando Archivo de Pasajes por Venta ::::");
+        System.out.print("ID Documento: ");
+        String idDoc = sc.nextLine();
+        System.out.print("Tipo documento: [1] Boleta [2] Factura : ");
+        TipoDocumento tipo = Integer.parseInt(sc.nextLine()) == 1 ? TipoDocumento.BOLETA : TipoDocumento.FACTURA;
+
+        SistemaVentaPasajes.getInstance().generatePasajesVenta(idDoc, tipo);
+        System.out.println("::: Archivo generado exitosamente con el formato de pasaje electrónico :::");
+    }
+
     private Rut leerRut() {
-        System.out.print("R.U.T : ");
-        String rutStr = sc.nextLine().replace(".", "");
-        return Rut.of(rutStr);
+        System.out.print("R.U.T (Formato obligatorio: 12.345.678-9) : ");
+        String rutInput = sc.nextLine().trim();
+
+        if (!rutInput.matches("^\\d{1,2}\\.\\d{3}\\.\\d{3}-[\\dKk]$")) {
+            throw new SVPException("Formato de R.U.T. inválido. Debe incluir estrictamente puntos y guión (ej: 12.345.678-9).");
+        }
+
+        String rutLimpio = rutInput.replace(".", "");
+        return Rut.of(rutLimpio);
     }
 
     private idPersona leerIdPersona() {
@@ -133,6 +157,7 @@ public class UISVP {
     private void createEmpresa() {
         System.out.println("\n:::: Creando una nueva Empresa ::::");
         Rut rut = leerRut();
+
         System.out.print("Nombre: ");
         String nombre = sc.nextLine();
         System.out.print("url: ");
@@ -169,7 +194,6 @@ public class UISVP {
         System.out.print("Nombre : ");
         String nombre = sc.nextLine();
         Direccion dir = leerDireccion();
-
         ControladorEmpresas.getInstance().createTerminal(nombre, dir);
         System.out.println("...:::: Terminal guardado exitosamente ::::....");
     }
@@ -263,18 +287,16 @@ public class UISVP {
         System.out.println("\n:::: Pasajes a vender");
         System.out.print("Cantidad de pasajes: ");
         int cantidad = Integer.parseInt(sc.nextLine());
-
         SistemaVentaPasajes.getInstance().iniciaVenta(idDoc, tipo, fechaViaje, comSalida, comLlegada, idCliente, cantidad);
-
         String[][] horarios = SistemaVentaPasajes.getInstance().getHorariosDisponibles(fechaViaje, comSalida, comLlegada, cantidad);
         System.out.println("\n:::: Listado de horarios disponibles");
-        System.out.println("*------------*----------*----------*----------*");
-        System.out.println("| BUS        | SALIDA   | VALOR    | ASIENTOS |");
-        System.out.println("*------------*----------*----------*----------*");
+        System.out.println("   *------------*----------*----------*----------*");
+        System.out.println("   | BUS        | SALIDA   | VALOR    | ASIENTOS |");
+        System.out.println("   *------------*----------*----------*----------*");
         for (int i = 0; i < horarios.length; i++) {
-            System.out.printf("%d | %-10s | %-8s | $%-7s | %-8s |\n", (i+1), horarios[i][0], horarios[i][1], horarios[i][2], horarios[i][3]);
+            System.out.printf("%2d | %-10s | %-8s | $%-7s | %-8s |\n", (i+1), horarios[i][0], horarios[i][1], horarios[i][2], horarios[i][3]);
         }
-        System.out.println("*------------*----------*----------*----------*");
+        System.out.println("   *------------*----------*----------*----------*");
         System.out.print("Seleccione viaje [1.." + horarios.length + "] : ");
         int sel = Integer.parseInt(sc.nextLine()) - 1;
 
@@ -329,11 +351,25 @@ public class UISVP {
     }
 
     private void listVentas() {
-        System.out.println("\n...:::: Listado de ventas generales ::::....");
+        System.out.println("\n...:::: Listado de ventas generales ::::....\n");
         String[][] ventas = SistemaVentaPasajes.getInstance().listVentas();
-        for (String[] v : ventas) {
-            System.out.printf("Doc: %s | Tipo: %s | Fecha: %s | Monto Pagado: $%s\n", v[0], v[1], v[2], v[3]);
+
+        String bordeTopBottom = "*--------------*------------*------------*----------------*";
+        String bordeFilas     = "|--------------+------------+------------+----------------|";
+
+        System.out.println(bordeTopBottom);
+        System.out.println("| ID DOCUMENTO | TIPO       | FECHA      | MONTO PAGADO   |");
+
+        if (ventas.length == 0) {
+            System.out.println(bordeFilas);
+            System.out.println("| No hay ventas registradas en este momento.              |");
+        } else {
+            for (String[] v : ventas) {
+                System.out.println(bordeFilas);
+                System.out.printf("| %-12s | %-10s | %-10s | $%13s |\n", v[0], v[1], v[2], v[3]);
+            }
         }
+        System.out.println(bordeTopBottom);
     }
 
     private void listViajes() {
@@ -365,22 +401,48 @@ public class UISVP {
         String patente = sc.nextLine();
 
         String[][] pasajeros = SistemaVentaPasajes.getInstance().listPasajerosViaje(fecha, hora, patente);
-        for (String[] p : pasajeros) {
-            System.out.printf("ID: %s | Nombre: %s | Contacto: %s | Fono: %s\n", p[0], p[1], p[2], p[3]);
+
+        System.out.println("");
+        String bordeTopBottom = "*----------------*-------------------------------------*-------------------------------------*-----------------*";
+        String bordeFilas     = "|----------------+-------------------------------------+-------------------------------------+-----------------|";
+
+        System.out.println(bordeTopBottom);
+        System.out.println("| IDENTIFICADOR  | NOMBRE PASAJERO                     | NOMBRE CONTACTO EMERGENCIA          | FONO CONTACTO   |");
+
+        if (pasajeros.length == 0) {
+            System.out.println(bordeFilas);
+            System.out.println("| No hay pasajeros registrados para este viaje o el viaje no existe.                                           |");
+        } else {
+            for (String[] p : pasajeros) {
+                System.out.println(bordeFilas);
+                String idLimpio = p[0].replace("Rut: ", "");
+                System.out.printf("| %-14s | %-35s | %-35s | %-15s |\n", idLimpio, p[1], p[2], p[3]);
+            }
         }
+        System.out.println(bordeTopBottom);
     }
 
     private void listEmpresas() {
-        System.out.println("\n...... Listado de empresas .......");
+        System.out.println("\n..:::: Listado de empresas ::::....\n");
         String[][] emp = ControladorEmpresas.getInstance().listEmpresas();
-        System.out.println("*----------------*----------------------*-------------------------*---------------------------------*");
-        System.out.println("| RUT EMPRESA    | NOMBRE               | URL                     | ESTADO GENERAL                  |");
-        System.out.println("*----------------*----------------------*-------------------------*---------------------------------*");
-        for (String[] e : emp) {
-            String estado = "Trips: " + e[3] + " | Buses: " + e[4] + " | Ventas: " + e[5];
-            System.out.printf("| %-14s | %-20s | %-23s | %-31s |\n", e[0], e[1], e[2], estado);
+
+        String bordeTopBottom = "*----------------*----------------------*--------------------------------*------------------*------------*-------------*";
+        String bordeFilas     = "|----------------+----------------------+--------------------------------+------------------+------------+-------------|";
+
+        System.out.println(bordeTopBottom);
+        System.out.println("| RUT EMPRESA    | NOMBRE               | URL                            | NRO. TRIPULANTES | NRO. BUSES | NRO. VENTAS |");
+
+        if (emp.length == 0) {
+            System.out.println(bordeFilas);
+            System.out.println("| No hay empresas registradas en este momento.                                                                         |");
+        } else {
+            for (int i = 0; i < emp.length; i++) {
+                System.out.println(bordeFilas);
+                System.out.printf("| %-14s | %-20s | %-30s | %16s | %10s | %11s |\n",
+                        emp[i][0], emp[i][1], emp[i][2], emp[i][3], emp[i][4], emp[i][5]);
+            }
         }
-        System.out.println("*----------------*----------------------*-------------------------*---------------------------------*");
+        System.out.println(bordeTopBottom);
     }
 
     private void listLlegadasSalidasTerminal() throws ParseException {

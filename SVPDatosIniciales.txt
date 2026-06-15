@@ -1,0 +1,14 @@
+CP:11.111.111-1; SR; Jose Esteban; Cid; Aedo; (+569)11223344; jose@fake.email.cl; SRA; Lidia Andrea; Solis; Robles; (+569)97774432
+C:33.333.333-3; SRA; Angela Eugenia; Munoz; Naranjo; (+569)61723323; angela@fake.email.cl
++
+88.888.888-8; Buses Nuble; https://www.busesnuble.cl
++
+A:55.555.555-5; SR; Juan Esteban; Lagos; Rios; San Carlos; 201; Talcahuano; 88.888.888-8
+C:66.666.666-6; SR; Carlos Patricio; Orellana; Godoy; Av Libertad; 500; Chillan; 88.888.888-8
++
+El Nevado Alto; O Higgins; 120; Chillan
+El Pinar; Los Alamos; 450; Pinto
++
+EFGH34; Marcopolo; Paradiso; 40; 88.888.888-8
++
+15-12-2026; 08:00; 3500; 90; EFGH34; 55.555.555-5; 66.666.666-6; El Nevado Alto; El Pinar

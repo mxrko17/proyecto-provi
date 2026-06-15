@@ -2,8 +2,9 @@ package modelo;
 
 import utilidades.Nombre;
 import utilidades.idPersona;
+import java.io.Serializable;
 
-class Persona {
+class Persona implements Serializable{
     private idPersona idPersona;
     private Nombre nombreCompleto;
     private String telefono;

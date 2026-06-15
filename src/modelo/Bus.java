@@ -1,8 +1,9 @@
 package modelo;
 
 import java.util.ArrayList;
+import java.io.Serializable;
 
-public class Bus {
+public class Bus implements Serializable{
     private String patente;
     private String marca;
     private String modelo;

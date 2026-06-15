@@ -2,8 +2,9 @@ package modelo;
 
 import java.util.Date;
 import java.util.ArrayList;
+import java.io.Serializable;
 
-public class Venta {
+public class Venta implements Serializable{
     private String idDocumento;
     private TipoDocumento tipo;
     private Date fecha;

@@ -1,8 +1,9 @@
 package modelo;
 
-import java.util.UUID; // Importamos la clase mágica
+import java.util.UUID;
+import java.io.Serializable;
 
-public class Pasaje {
+public class Pasaje implements Serializable{
     private long numero;
     private int asiento;
     private Viaje viaje;
